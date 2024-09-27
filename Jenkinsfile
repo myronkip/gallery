@@ -4,10 +4,17 @@ pipeline {
         nodejs 'nodejs' 
     }
     stages {
-        stage('Install') {
+        stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'npm install'
+                    sh 'npm ci'
+                }
+            }
+        }
+        stage('Lint') {
+            steps {
+                script {
+                    sh 'npm run lint'
                 }
             }
         }
@@ -25,9 +32,6 @@ pipeline {
                 }
             }
         }
-    }
-    triggers {
-        pollSCM('* * * * *') // Poll every minute for changes
     }
     post {
         success {
