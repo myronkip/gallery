@@ -1,30 +1,24 @@
 pipeline {
     agent any
-    
+    tools {
+        nodejs 'nodejs' 
+    }
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/myronkip/gallery.git'
-            }
-        }
-
-        stage('Install Dependencies') {
+        stage('Install') {
             steps {
                 script {
                     sh 'npm install'
                 }
             }
         }
-
-        stage('Build') {
-            steps { // Corrected 'step s{' to 'steps {'
+        stage('Test') {
+            steps {
                 script {
-                    sh 'npm run build' // Uncommented the build step
+                    sh 'npm test'
                 }
             }
         }
-
-        stage('Deploy to Render') {
+        stage('Deploy') {
             steps {
                 script {
                     sh 'node server.js'
@@ -32,11 +26,9 @@ pipeline {
             }
         }
     }
-
     triggers {
         pollSCM('* * * * *') // Poll every minute for changes
     }
-    
     post {
         success {
             slackSend(channel: '#myron_ip1', message: "Deployment successful: ${env.BUILD_ID} - ${env.Render_URL}")
