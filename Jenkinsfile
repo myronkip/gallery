@@ -1,9 +1,16 @@
 pipeline {
     agent any
-    tools {
-        nodejs 'nodejs' 
+    environment {
+        RENDER_API_KEY = credentials('yrnd_5bcxXg') 
+        RENDER_SERVICE_ID = 'gallery-myronkip'
     }
     stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/myronkip/gallery.git' 
+            }
+        }
+        stages {
         stage('Install') {
             steps {
                 script {
@@ -18,13 +25,28 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Build') {
+            steps {
+                //build
+            }
+        }
+        stage('Deploy to Render') {
             steps {
                 script {
-                    sh 'node server.js'
+                    def response = httpRequest(
+                        url: "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys",
+                        httpMode: 'POST',
+                        contentType: 'APPLICATION_JSON',
+                        requestBody: '{}', 
+                        customHeaders: [[name: 'Authorization', value: "Bearer ${RENDER_API_KEY}"]]
+                    )
+                    echo "Response: ${response.status}"
                 }
             }
         }
+    }
+    triggers {
+        pollSCM('* * * * *') 
     }
     post {
         success {
