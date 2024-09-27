@@ -1,11 +1,9 @@
 pipeline {
     agent any
+    tools {
+        nodejs 'nodejs' 
+    }
     stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://github.com/myronkip/gallery.git' 
-            }
-        }
         stage('Install') {
             steps {
                 script {
@@ -20,34 +18,20 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('Deploy') {
             steps {
                 script {
-                    sh 'npm run build'
-                }
-            }
-        }
-        stage('Deploy to Render') {
-            steps {
-                script {
-                    def response = httpRequest(
-                        url: "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys",
-                        httpMode: 'POST',
-                        contentType: 'APPLICATION_JSON',
-                        requestBody: '{}', 
-                        customHeaders: [[name: 'Authorization', value: "Bearer ${RENDER_API_KEY}"]]
-                    )
-                    echo "Response: ${response.status}"
+                    sh 'node server.js'
                 }
             }
         }
     }
     triggers {
-        pollSCM('* * * * *') 
+        pollSCM('* * * * *') // Poll every minute for changes
     }
     post {
         success {
-            slackSend(channel: '#myron_ip1', message: "Deployment successful: ${env.BUILD_ID}")
+            slackSend(channel: '#myron_ip1', message: "Deployment successful: ${env.BUILD_ID} - ${env.Render_URL}")
         }
         failure {
             slackSend(channel: '#myron_ip1', message: "Deployment failed: ${env.BUILD_ID}")
