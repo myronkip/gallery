@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    environment {
-        RENDER_SERVICE_ID = 'gallery-myronkip'
-    }
     stages {
         stage('Clone Repository') {
             steps {
