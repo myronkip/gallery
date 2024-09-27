@@ -17,8 +17,10 @@ pipeline {
         }
 
         stage('Build') {
-            step s{
-                // sh 'npm run build'
+            steps { // Corrected 'step s{' to 'steps {'
+                script {
+                    sh 'npm run build' // Uncommented the build step
+                }
             }
         }
 
@@ -29,10 +31,12 @@ pipeline {
                 }
             }
         }
+    }
 
-        triggers {
+    triggers {
         pollSCM('* * * * *') // Poll every minute for changes
     }
+    
     post {
         success {
             slackSend(channel: '#myron_ip1', message: "Deployment successful: ${env.BUILD_ID} - ${env.Render_URL}")
