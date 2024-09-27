@@ -1,8 +1,6 @@
 pipeline {
     agent any
-environment {
-        RENDER_URL = 'https://gallery-6c99.onrender.com'
-    }
+    
     stages {
         stage('Checkout') {
             steps {
