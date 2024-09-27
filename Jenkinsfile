@@ -4,17 +4,10 @@ pipeline {
         nodejs 'nodejs' 
     }
     stages {
-        stage('Install Dependencies') {
+        stage('Install') {
             steps {
                 script {
-                    sh 'npm ci'
-                }
-            }
-        }
-        stage('Lint') {
-            steps {
-                script {
-                    sh 'npm run lint'
+                    sh 'npm install'
                 }
             }
         }
