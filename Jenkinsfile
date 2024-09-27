@@ -10,7 +10,6 @@ pipeline {
                 git 'https://github.com/myronkip/gallery.git' 
             }
         }
-        stages {
         stage('Install') {
             steps {
                 script {
@@ -27,7 +26,9 @@ pipeline {
         }
         stage('Build') {
             steps {
-                //build
+                script {
+                    sh 'npm run build'
+                }
             }
         }
         stage('Deploy to Render') {
@@ -50,7 +51,7 @@ pipeline {
     }
     post {
         success {
-            slackSend(channel: '#myron_ip1', message: "Deployment successful: ${env.BUILD_ID} - ${env.Render_URL}")
+            slackSend(channel: '#myron_ip1', message: "Deployment successful: ${env.BUILD_ID}")
         }
         failure {
             slackSend(channel: '#myron_ip1', message: "Deployment failed: ${env.BUILD_ID}")
