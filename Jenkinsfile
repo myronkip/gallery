@@ -20,9 +20,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                script {
-                    sh 'node server.js'
-                }
+                withCredentials([string(credentialsId: 'Renderhook', variable: 'RENDER_DEPLOY_HOOK')]) {
+                    sh """
+                    curl -X POST ${RENDER_DEPLOY_HOOK}
+                    """
+                } 
             }
         }
     }
